@@ -1,0 +1,10 @@
+[
+    {
+        "jsonpath": "$..alertRuleTemplateName",
+        "replacement": "NewTemplate1"
+    },
+    {
+        "jsonpath": "$..description",
+        "replacement": "This the new description."
+    }
+]

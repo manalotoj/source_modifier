@@ -1,0 +1,12 @@
+{
+    "alertRuleTemplates": [
+        {
+            "alertRuleTemplateName": "UpdatedTemplateNameOld",
+            "description": "This is an updated description."
+        },
+        {
+            "alertRuleTemplateName": "UpdatedTemplateNameOlder",
+            "description": "This is an updated description."
+        }
+    ]
+}
