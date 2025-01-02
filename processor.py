@@ -1,9 +1,7 @@
 import os
 from jsonpath_ng.ext import parse
 from file_utils import load_file, save_file
-from config_utils import load_config
 from results_writer import save_results
-
 
 def jsonpath_replace(content, rules):
     """
@@ -52,15 +50,13 @@ def text_replace(content, rules):
 
     Args:
         content: The plain text content as a string.
-        rules: A list of rules where each rule is a dictionary with keys:
-            - `search`: Text to search for.
-            - `replace`: Text to replace it with.
+        rules: A list of rules with 'search' and 'replace' keys.
 
     Returns:
-        updated_content: The modified text content as a list of lines.
-        results: A list of changes made, including line numbers and old/new lines.
+        updated_content: The modified text content.
+        results: A list of changes made.
     """
-    lines = content.splitlines()  # Split content into lines
+    lines = content.splitlines()
     results = []
 
     for i, line in enumerate(lines):
@@ -90,66 +86,79 @@ def text_replace(content, rules):
     return updated_content, results
 
 
-def process_file(file_path, config_file, output_file, output_format):
+def process_file(file_path, config, output_file, output_format):
     """
     Process a single file as JSON or plain text based on its structure.
+
+    Args:
+        file_path: Path to the file to process.
+        config: Parsed configuration containing the rules for processing.
+        output_file: File to save the results.
+        output_format: Format of the output (txt, csv, json).
     """
-    rules = load_config(config_file)
-    content = load_file(file_path)
+    all_results = []
 
-    if content is None:
-        print(f"Error: Could not process the file '{file_path}'.")
-        return
+    for rule in config:
+        content = load_file(file_path)
 
-    # Determine if the file is JSON or plain text
-    is_json = isinstance(content, (dict, list))
+        if content is None:
+            print(f"Error: Could not process the file '{file_path}'.")
+            continue
 
-    if is_json:
-        # Perform JSONPath-based replacement
-        updated_content, results = jsonpath_replace(content, rules)
-    else:
-        # Perform plain text replacement
-        updated_content, results = text_replace(content, rules)
+        # Determine if the file is JSON or plain text
+        is_json = isinstance(content, (dict, list))
 
-    for result in results:
-        result["file"] = file_path
+        if is_json and "jsonpath" in rule:
+            updated_content, results = jsonpath_replace(content, [rule])
+        elif not is_json and "search" in rule:
+            updated_content, results = text_replace(content, [rule])
+        else:
+            print(f"Warning: Rule {rule} does not match the file type.")
+            continue
 
-    # Save the updated content back to the file
-    save_file(file_path, updated_content)
+        for result in results:
+            result["file"] = file_path
 
-    # Save and display results
-    save_results(results, output_file, output_format)
+        save_file(file_path, updated_content)
+        all_results.extend(results)
+
+    save_results(all_results, output_file, output_format)
 
 
-def process_folder(folder, config_file, output_file, output_format):
+def process_folder(folder, config, output_file, output_format):
     """
     Process all files in a folder.
+
+    Args:
+        folder: Path to the folder to process.
+        config: Parsed configuration containing the rules for processing.
+        output_file: File to save the results.
+        output_format: Format of the output (txt, csv, json).
     """
-    rules = load_config(config_file)
     all_results = []
 
     for root, _, files in os.walk(folder):
         for file in files:
             file_path = os.path.join(root, file)
-            content = load_file(file_path)
+            for entry in config:
+                content = load_file(file_path)
 
-            if content is None:
-                continue
+                if content is None:
+                    continue
 
-            # Determine if the file is JSON or plain text
-            is_json = isinstance(content, (dict, list))
+                is_json = isinstance(content, (dict, list))
 
-            if is_json:
-                # Perform JSONPath-based replacement
-                updated_content, results = jsonpath_replace(content, rules)
-            else:
-                # Perform plain text replacement
-                updated_content, results = text_replace(content, rules)
+                if is_json and "jsonpath" in entry:
+                    updated_content, results = jsonpath_replace(content, [entry])
+                elif not is_json and "search" in entry:
+                    updated_content, results = text_replace(content, [entry])
+                else:
+                    continue
 
-            for result in results:
-                result["file"] = file_path
+                for result in results:
+                    result["file"] = file_path
 
-            all_results.extend(results)
-            save_file(file_path, updated_content)
+                save_file(file_path, updated_content)
+                all_results.extend(results)
 
     save_results(all_results, output_file, output_format)

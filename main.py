@@ -1,11 +1,11 @@
 import argparse
 import os
 from processor import process_file, process_folder
+from config_utils import load_config
 
 def main():
-    parser = argparse.ArgumentParser(description="Perform text replacements in files.")
-    parser.add_argument("path", help="Path to a file or folder containing files to process.")
-    parser.add_argument("config", help="Configuration file specifying search and replace rules.")
+    parser = argparse.ArgumentParser(description="Perform text or JSONPath replacements in files or folders.")
+    parser.add_argument("config", help="Path to the configuration file specifying search and replace rules.")
     parser.add_argument(
         "-o", "--output", default="results.txt", help="Output file to save the results (default: results.txt)."
     )
@@ -18,13 +18,24 @@ def main():
     )
     args = parser.parse_args()
 
-    # Check if the input path is a file or a folder
-    if os.path.isfile(args.path):
-        process_file(args.path, args.config, args.output, args.format)
-    elif os.path.isdir(args.path):
-        process_folder(args.path, args.config, args.output, args.format)
-    else:
-        print(f"Error: The specified path '{args.path}' is neither a file nor a folder.")
+    # Load the configuration file
+    try:
+        config = load_config(args.config)
+    except ValueError as e:
+        print(f"Error: {e}")
+        return
+
+    # Process each entry in the configuration
+    for entry in config:
+        path = entry["path"]
+        if os.path.isfile(path):
+            print(f"Processing file: {path}")
+            process_file(path, [entry], args.output, args.format)
+        elif os.path.isdir(path):
+            print(f"Processing folder: {path}")
+            process_folder(path, [entry], args.output, args.format)
+        else:
+            print(f"Error: Path '{path}' is neither a valid file nor a folder.")
 
 if __name__ == "__main__":
     main()

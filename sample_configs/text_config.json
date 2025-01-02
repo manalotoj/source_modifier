@@ -1,3 +1,7 @@
 [
-  { "search": "northeurope", "replace": "usgovarizona" }
+  { 
+    "search": "northeurope", 
+    "replace": "usgovarizona", 
+    "path": "./target/sample_bicep.bicep" 
+  }
 ]
