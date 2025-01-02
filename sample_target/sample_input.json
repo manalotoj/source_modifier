@@ -1,0 +1,12 @@
+{
+    "alertRuleTemplates": [
+        {
+            "alertRuleTemplateName": "NewTemplate1",
+            "description": "This the new description."
+        },
+        {
+            "alertRuleTemplateName": "NewTemplate1",
+            "description": "This the new description."
+        }
+    ]
+}
