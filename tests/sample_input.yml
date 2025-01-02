@@ -1,5 +1,0 @@
-alertRuleTemplates:
-  - alertRuleTemplateName: HighCPUAlert
-    description: Alert for high CPU usage.
-  - alertRuleTemplateName: LowDiskSpace
-    description: Alert for low disk space.
