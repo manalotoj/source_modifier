@@ -1,6 +1,6 @@
 [
     {
-        "path": "./target/Deploy-VM-DataDiskSpace-Alert.json",
+        "path": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json",
         "jsonpath": "$..query",
         "replacement": "[format('let policyThresholdString = \"{0}\"; InsightsMetrics | where _ResourceId has \"Microsoft.Compute/virtualMachines\" | where Origin == \"vm.azm.ms\" | where Namespace == \"LogicalDisk\" and Name == \"FreeSpacePercentage\" | extend Disk=tostring(todynamic(Tags)[\"vm.azm.ms/mountId\"]) | where Disk !in (\"C:\",\"/\") | summarize AggregatedValue = avg(Val) by bin(TimeGenerated, 15m), Computer, _ResourceId, Disk | extend appliedThresholdString = policyThresholdString | extend appliedThreshold = toint(appliedThresholdString) | where AggregatedValue < appliedThreshold | project TimeGenerated, Computer, _ResourceId, Disk, AggregatedValue', parameters('threshold'))]"
     }

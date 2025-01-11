@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import os
 from processor import process_file, process_folder
