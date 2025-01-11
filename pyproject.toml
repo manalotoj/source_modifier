@@ -1,27 +1,26 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]  # Build dependencies
+requires = []  # This will be dynamically populated from `requirements-dev.txt`
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "source_modifier"  # Your project name
-version = "0.1.0"  # Version of your project
-description = "A Python script to modify source code."  # Short description
-readme = "README.md"  # Path to your README file
-requires-python = ">=3.7"  # Minimum Python version
-license = {text = "MIT"}  # License type
+name = "source_modifier"
+version = "0.1.0"
+description = "A Python script to modify source code."
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Manalotoj", email = "mail@mail.com"}
 ]
-homepage = "https://github.com/manalotoj/source_modifier"  # Homepage URL
-repository = "https://github.com/manalotoj/source_modifier"  # Repository URL
-keywords = ["source", "modifier", "python"]  # List of keywords
+homepage = "https://github.com/manalotoj/source_modifier"
+repository = "https://github.com/manalotoj/source_modifier"
+keywords = ["source", "modifier", "python"]
 
 [project.dependencies]
-jsonpath-ng[ext] = "==1.5.3"  # Pin exact version with optional extras
-PyYAML = "*"  # Any version of PyYAML
+# Runtime dependencies will be loaded dynamically from src/requirements.txt
 
 [project.optional-dependencies]
-dev = ["pytest", "black"]  # Development dependencies (e.g., testing, linting)
+dev = ["pytest", "black"]  # Additional dev dependencies
 
 [project.scripts]
-source_modifier = "source_modifier.main:main"  # CLI command entry point
+source_modifier = "src.main:main"
