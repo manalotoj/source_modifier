@@ -33,7 +33,7 @@ def save_results(results, output_file, output_format, first_write):
 
     # Save results to the specified output file
     if output_format == "txt":
-        with open(output_file, write_mode) as file:
+        with open(output_file, write_mode, encoding="utf-8") as file:
             for result in results:
                 file.write(f"File: {result['file']}\n")
                 if "line_number" in result:
@@ -49,7 +49,7 @@ def save_results(results, output_file, output_format, first_write):
                     file.write(f"  New Value: {result['new_value']}\n\n")
 
     elif output_format == "csv":
-        with open(output_file, write_mode, newline='') as file:
+        with open(output_file, write_mode, newline='', encoding="utf-8") as file:
             if first_write:
                 if "line_number" in results[0]:
                     writer = csv.DictWriter(
@@ -77,13 +77,13 @@ def save_results(results, output_file, output_format, first_write):
 
     elif output_format == "json":
         if first_write:
-            with open(output_file, write_mode) as file:
+            with open(output_file, write_mode, encoding="utf-8") as file:
                 json.dump(results, file, indent=4)
         else:
-            with open(output_file, "r") as file:
+            with open(output_file, "r", encoding="utf-8") as file:
                 existing_data = json.load(file)
             existing_data.extend(results)
-            with open(output_file, "w") as file:
+            with open(output_file, "w", encoding="utf-8") as file:
                 json.dump(existing_data, file, indent=4)
 
     print(f"Results saved to {output_file} in {output_format.upper()} format.")

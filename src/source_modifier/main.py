@@ -2,13 +2,34 @@ import argparse
 import os
 from processor import process_file, process_folder
 from file_utils import load_file
+from results_writer import save_results
+
+
+def infer_output_format(output_file):
+    """
+    Infer the output format from the file extension.
+
+    Args:
+        output_file: Path to the output file.
+
+    Returns:
+        The inferred output format ('txt', 'csv', or 'json').
+    """
+    ext = os.path.splitext(output_file)[1].lower()
+    if ext == ".txt":
+        return "txt"
+    elif ext == ".csv":
+        return "csv"
+    elif ext == ".json":
+        return "json"
+    else:
+        raise ValueError(f"Unsupported file extension: {ext}. Supported extensions are .txt, .csv, .json.")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Perform search and replace on JSON or text files.")
     parser.add_argument("config", help="Path to the configuration file.")
     parser.add_argument("-o", "--output", help="Path to the output results file.", required=True)
-    parser.add_argument("-f", "--format", help="Output format: txt, csv, or json.", default="txt")
     args = parser.parse_args()
 
     config = load_file(args.config)
@@ -16,7 +37,7 @@ def main():
         raise ValueError("Configuration file must contain a list of rules.")
 
     output_file = args.output
-    output_format = args.format
+    output_format = infer_output_format(output_file)
     first_write = True  # Flag to control whether to overwrite or append
 
     for entry in config:
@@ -36,7 +57,6 @@ def main():
             continue
 
         # Save results to output file
-        from results_writer import save_results
         save_results(results, output_file, output_format, first_write)
 
         # Set flag to append for subsequent writes

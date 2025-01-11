@@ -1,5 +1,128 @@
-File: ./sample_target/Deploy-VM-DataDiskSpace-Alert.json
-  JSON Path: properties.policyRule.then.details.deployment.properties.template.resources.[1].properties.template.resources.[0].properties.criteria.allOf.[0].query
-  Old Value: [format('let policyThresholdString = "{0}"; InsightsMetrics | where _ResourceId has "Microsoft.Compute/virtualMachines" | where Origin == "vm.azm.ms" | where Namespace == "LogicalDisk" and Name == "FreeSpacePercentage" | extend Disk=tostring(todynamic(Tags)["vm.azm.ms/mountId"]) | where Disk !in ("C:","/") | summarize AggregatedValue = avg(Val) by bin(TimeGenerated, 15m), Computer, _ResourceId, Disk | extend appliedThresholdString = policyThresholdString | extend appliedThreshold = toint(appliedThresholdString) | where AggregatedValue < appliedThreshold | project TimeGenerated, Computer, _ResourceId, Disk, AggregatedValue', parameters('threshold'))]
-  New Value: [format('let policyThresholdString = "{0}"; InsightsMetrics | where _ResourceId has "Microsoft.Compute/virtualMachines" | where Origin == "vm.azm.ms" | where Namespace == "LogicalDisk" and Name == "FreeSpacePercentage" | extend Disk=tostring(todynamic(Tags)["vm.azm.ms/mountId"]) | where Disk !in ("C:","/") | summarize AggregatedValue = avg(Val) by bin(TimeGenerated, 15m), Computer, _ResourceId, Disk | extend appliedThresholdString = policyThresholdString | extend appliedThreshold = toint(appliedThresholdString) | where AggregatedValue < appliedThreshold | project TimeGenerated, Computer, _ResourceId, Disk, AggregatedValue', parameters('threshold'))]
-
+[
+    {
+        "json_path": "properties.policyRule.then.details.deployment.properties.template.resources.[1].properties.template.resources.[0].properties.criteria.allOf.[0].query",
+        "old_value": "[format('let policyThresholdString = \"{0}\"; InsightsMetrics | where _ResourceId has \"Microsoft.Compute/virtualMachines\" | where Origin == \"vm.azm.ms\" | where Namespace == \"LogicalDisk\" and Name == \"FreeSpacePercentage\" | extend Disk=tostring(todynamic(Tags)[\"vm.azm.ms/mountId\"]) | where Disk !in (\"C:\",\"/\") | summarize AggregatedValue = avg(Val) by bin(TimeGenerated, 15m), Computer, _ResourceId, Disk | extend appliedThresholdString = policyThresholdString | extend appliedThreshold = toint(appliedThresholdString) | where AggregatedValue < appliedThreshold | project TimeGenerated, Computer, _ResourceId, Disk, AggregatedValue', parameters('threshold'))]",
+        "new_value": "[format('let policyThresholdString = \"{0}\"; InsightsMetrics | where _ResourceId has \"Microsoft.Compute/virtualMachines\" | where Origin == \"vm.azm.ms\" | where Namespace == \"LogicalDisk\" and Name == \"FreeSpacePercentage\" | extend Disk=tostring(todynamic(Tags)[\"vm.azm.ms/mountId\"]) | where Disk !in (\"C:\",\"/\") | summarize AggregatedValue = avg(Val) by bin(TimeGenerated, 15m), Computer, _ResourceId, Disk | extend appliedThresholdString = policyThresholdString | extend appliedThreshold = toint(appliedThresholdString) | where AggregatedValue < appliedThreshold | project TimeGenerated, Computer, _ResourceId, Disk, AggregatedValue', parameters('threshold'))]",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.description",
+        "old_value": "Policy to audit/deploy VM data Disk Space Alert",
+        "new_value": "Policy to audit/deploy VM data Disk Space Alert ---AND--- Policy to audit/deploy VM data Disk Space Alert",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.alertResourceGroupName.metadata.description",
+        "old_value": "Resource group the alert is placed in",
+        "new_value": "Resource group the alert is placed in ---AND--- Resource group the alert is placed in",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.alertResourceGroupTags.metadata.description",
+        "old_value": "Tags on the Resource group the alert is placed in",
+        "new_value": "Tags on the Resource group the alert is placed in ---AND--- Tags on the Resource group the alert is placed in",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.alertResourceGroupLocation.metadata.description",
+        "old_value": "Location of the Resource group the alert is placed in",
+        "new_value": "Location of the Resource group the alert is placed in ---AND--- Location of the Resource group the alert is placed in",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.UAMIResourceId.metadata.description",
+        "old_value": "The resource Id of the user assigned managed identity.",
+        "new_value": "The resource Id of the user assigned managed identity. ---AND--- The resource Id of the user assigned managed identity.",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.severity.metadata.description",
+        "old_value": "Severity of the Alert",
+        "new_value": "Severity of the Alert ---AND--- Severity of the Alert",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.windowSize.metadata.description",
+        "old_value": "Window size for the alert",
+        "new_value": "Window size for the alert ---AND--- Window size for the alert",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.evaluationFrequency.metadata.description",
+        "old_value": "Evaluation frequency for the alert",
+        "new_value": "Evaluation frequency for the alert ---AND--- Evaluation frequency for the alert",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.autoMitigate.metadata.description",
+        "old_value": "Auto Mitigate for the alert",
+        "new_value": "Auto Mitigate for the alert ---AND--- Auto Mitigate for the alert",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.autoResolve.metadata.description",
+        "old_value": "Auto Resolve for the alert",
+        "new_value": "Auto Resolve for the alert ---AND--- Auto Resolve for the alert",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.autoResolveTime.metadata.description",
+        "old_value": "Auto Resolve time for the alert in ISO 8601 format",
+        "new_value": "Auto Resolve time for the alert in ISO 8601 format ---AND--- Auto Resolve time for the alert in ISO 8601 format",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.enabled.metadata.description",
+        "old_value": "Alert state for the alert",
+        "new_value": "Alert state for the alert ---AND--- Alert state for the alert",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.threshold.metadata.description",
+        "old_value": "Threshold for the alert",
+        "new_value": "Threshold for the alert ---AND--- Threshold for the alert",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.failingPeriods.metadata.description",
+        "old_value": "Number of failing periods before alert is fired",
+        "new_value": "Number of failing periods before alert is fired ---AND--- Number of failing periods before alert is fired",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.evaluationPeriods.metadata.description",
+        "old_value": "The number of aggregated lookback points.",
+        "new_value": "The number of aggregated lookback points. ---AND--- The number of aggregated lookback points.",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.computersToInclude.metadata.description",
+        "old_value": "Array of Computer to be monitored",
+        "new_value": "Array of Computer to be monitored ---AND--- Array of Computer to be monitored",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.effect.metadata.description",
+        "old_value": "Effect of the policy",
+        "new_value": "Effect of the policy ---AND--- Effect of the policy",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.MonitorDisableTagName.metadata.description",
+        "old_value": "Tag name to disable monitoring. Set to true if monitoring should be disabled",
+        "new_value": "Tag name to disable monitoring. Set to true if monitoring should be disabled ---AND--- Tag name to disable monitoring. Set to true if monitoring should be disabled",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.parameters.MonitorDisableTagValues.metadata.description",
+        "old_value": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+        "new_value": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled. ---AND--- Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    },
+    {
+        "json_path": "properties.policyRule.then.details.deployment.properties.template.resources.[1].properties.template.resources.[0].properties.description",
+        "old_value": "Log Alert for Virtual Machine dataDiskSpace",
+        "new_value": "Log Alert for Virtual Machine dataDiskSpace ---AND--- Log Alert for Virtual Machine dataDiskSpace",
+        "file": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json"
+    }
+]
