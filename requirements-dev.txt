@@ -1,2 +1,3 @@
 wheel
+build
 setuptools>=42

@@ -1,12 +1,22 @@
 from setuptools import setup, find_packages
+import os
 
 # Load runtime dependencies from src/requirements.txt
-with open("src/requirements.txt") as f:
-    install_requires = f.read().splitlines()
+requirements_path = os.path.join(os.path.dirname(__file__), "src", "requirements.txt")
+try:
+    with open(requirements_path) as f:
+        install_requires = f.read().splitlines()
+except FileNotFoundError:
+    install_requires = []  # Fallback to no dependencies
+
 
 # Load build dependencies (e.g., setuptools, wheel) from requirements-dev.txt
-with open("requirements-dev.txt") as f:
-    build_requires = f.read().splitlines()
+requirements_path = os.path.join(os.path.dirname(__file__), "requirements-dev.txt")
+try:
+    with open(requirements_path) as f:
+        install_requires = f.read().splitlines()
+except FileNotFoundError:
+    install_requires = []  # Fallback to no dependencies
 
 setup(
     name="source_modifier",
@@ -21,10 +31,10 @@ setup(
     package_dir={"": "src"},
     python_requires=">=3.7",
     install_requires=install_requires,  # Runtime dependencies
-    setup_requires=build_requires,      # Build dependencies from requirements-dev.txt
+    setup_requires=["setuptools>=42", "wheel"],      # Build dependencies from requirements-dev.txt
     entry_points={
         "console_scripts": [
-            "source_modifier=src.main:main",
+            "source_modifier=source_modifier.main:main",
         ],
     },
 )
