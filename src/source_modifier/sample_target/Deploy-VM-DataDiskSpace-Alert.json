@@ -309,7 +309,7 @@
                         ]
                     },
                     "deployment": {
-                        "location": "northeurope",
+                        "location": "usgovarizona",
                         "properties": {
                             "mode": "incremental",
                             "template": {

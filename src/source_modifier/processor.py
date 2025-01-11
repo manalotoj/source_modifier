@@ -1,4 +1,5 @@
 import os
+import json
 from jsonpath_ng.ext import parse
 from file_utils import load_file, save_file
 from results_writer import save_results
@@ -49,17 +50,6 @@ def resolve_jsonpath_placeholders(transform_format, content, original_value):
 
 
 def jsonpath_replace(content, rules):
-    """
-    Perform JSONPath-based replacement in JSON content.
-
-    Args:
-        content: The JSON object.
-        rules: A list of rules with JSONPath expressions and replacements.
-
-    Returns:
-        content: The modified JSON object.
-        results: A list of changes made.
-    """
     results = []
 
     for rule in rules:
@@ -82,7 +72,13 @@ def jsonpath_replace(content, rules):
             else:
                 raise ValueError(f"Rule {rule} must specify either 'replacement' or 'transform_format'.")
 
-            # Perform the replacement
+            if transform_format:
+                new_value = resolve_jsonpath_placeholders(transform_format, content, old_value)
+            elif replacement is not None:
+                new_value = replacement
+            else:
+                raise ValueError(f"Rule {rule} must specify either 'replacement' or 'transform_format'.")
+
             if isinstance(parent, dict):
                 parent[match.path.fields[0]] = new_value
             elif isinstance(parent, list):
@@ -98,17 +94,6 @@ def jsonpath_replace(content, rules):
 
 
 def text_replace(content, rules):
-    """
-    Perform text replacement in plain text content.
-
-    Args:
-        content: The plain text content as a string.
-        rules: A list of rules with 'search' and 'replace' keys.
-
-    Returns:
-        updated_content: The modified text content.
-        results: A list of changes made.
-    """
     lines = content.splitlines()
     results = []
 
@@ -133,85 +118,80 @@ def text_replace(content, rules):
                     "occurrences": occurrences,
                 })
 
-        lines[i] = line  # Update the line in place
+        lines[i] = line
 
     updated_content = "\n".join(lines)
     return updated_content, results
 
 
-def process_file(file_path, config, output_file, output_format):
+def process_file(file_path, config, output_file=None, collect_results=False):
     """
     Process a single file as JSON or plain text based on its structure.
 
     Args:
         file_path: Path to the file to process.
         config: Parsed configuration containing the rules for processing.
-        output_file: File to save the results.
-        output_format: Format of the output (txt, csv, json).
+        output_file: File to save the results (optional if collect_results is True).
+        collect_results: If True, return the results instead of saving to a file.
+
+    Returns:
+        If collect_results is True, returns the results as a list of dictionaries.
+        Otherwise, saves the results to the specified output file.
     """
     all_results = []
+    content = load_file(file_path)
+
+    if content is None:
+        print(f"Error: Could not process the file '{file_path}'.")
+        return
+
+    is_json = isinstance(content, (dict, list))
+    updated_content = content  # Track modified content
 
     for rule in config:
-        content = load_file(file_path)
+        results = []
 
-        if content is None:
-            print(f"Error: Could not process the file '{file_path}'.")
-            continue
+        # Apply JSONPath replacement if the rule specifies jsonpath
+        if "jsonpath" in rule and is_json:
+            updated_content, json_results = jsonpath_replace(updated_content, [rule])
+            results.extend(json_results)
 
-        # Determine if the file is JSON or plain text
-        is_json = isinstance(content, (dict, list))
+        # Apply text replacement if the rule specifies search/replace
+        if "search" in rule and "replace" in rule:
+            # Convert JSON content to string for text replacement
+            string_content = json.dumps(updated_content, indent=4) if is_json else updated_content
+            string_content, text_results = text_replace(string_content, [rule])
+            results.extend(text_results)
 
-        if is_json and "jsonpath" in rule:
-            updated_content, results = jsonpath_replace(content, [rule])
-        elif not is_json and "search" in rule:
-            updated_content, results = text_replace(content, [rule])
-        else:
-            print(f"Warning: Rule {rule} does not match the file type.")
-            continue
+            # Update the content back to JSON if it was JSON originally
+            updated_content = json.loads(string_content) if is_json else string_content
 
         for result in results:
             result["file"] = file_path
 
-        save_file(file_path, updated_content)
         all_results.extend(results)
 
-    save_results(all_results, output_file, output_format)
+    # Save the modified content back to the file
+    save_file(file_path, updated_content)
+
+    # Save results or return them based on the collect_results flag
+    if collect_results:
+        return all_results
+    else:
+        save_results(all_results, output_file, "txt")
 
 
-def process_folder(folder, config, output_file, output_format):
-    """
-    Process all files in a folder.
 
-    Args:
-        folder: Path to the folder to process.
-        config: Parsed configuration containing the rules for processing.
-        output_file: File to save the results.
-        output_format: Format of the output (txt, csv, json).
-    """
+def process_folder(folder, config, output_file=None, collect_results=False):
     all_results = []
 
     for root, _, files in os.walk(folder):
         for file in files:
             file_path = os.path.join(root, file)
-            for entry in config:
-                content = load_file(file_path)
+            file_results = process_file(file_path, config, collect_results=True)
+            all_results.extend(file_results)
 
-                if content is None:
-                    continue
-
-                is_json = isinstance(content, (dict, list))
-
-                if is_json and "jsonpath" in entry:
-                    updated_content, results = jsonpath_replace(content, [entry])
-                elif not is_json and "search" in entry:
-                    updated_content, results = text_replace(content, [entry])
-                else:
-                    continue
-
-                for result in results:
-                    result["file"] = file_path
-
-                save_file(file_path, updated_content)
-                all_results.extend(results)
-
-    save_results(all_results, output_file, output_format)
+    if collect_results:
+        return all_results
+    else:
+        save_results(all_results, output_file, "txt")

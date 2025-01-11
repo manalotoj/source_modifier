@@ -1,43 +1,47 @@
-#!/usr/bin/env python3
-
 import argparse
 import os
 from processor import process_file, process_folder
-from config_utils import load_config
+from file_utils import load_file
+
 
 def main():
-    parser = argparse.ArgumentParser(description="Perform text or JSONPath replacements in files or folders.")
-    parser.add_argument("config", help="Path to the configuration file specifying search and replace rules.")
-    parser.add_argument(
-        "-o", "--output", default="results.txt", help="Output file to save the results (default: results.txt)."
-    )
-    parser.add_argument(
-        "-f",
-        "--format",
-        choices=["txt", "csv", "json"],
-        default="txt",
-        help="Output format for the results: txt, csv, or json (default: txt).",
-    )
+    parser = argparse.ArgumentParser(description="Perform search and replace on JSON or text files.")
+    parser.add_argument("config", help="Path to the configuration file.")
+    parser.add_argument("-o", "--output", help="Path to the output results file.", required=True)
+    parser.add_argument("-f", "--format", help="Output format: txt, csv, or json.", default="txt")
     args = parser.parse_args()
 
-    # Load the configuration file
-    try:
-        config = load_config(args.config)
-    except ValueError as e:
-        print(f"Error: {e}")
-        return
+    config = load_file(args.config)
+    if not isinstance(config, list):
+        raise ValueError("Configuration file must contain a list of rules.")
 
-    # Process each entry in the configuration
+    output_file = args.output
+    output_format = args.format
+    first_write = True  # Flag to control whether to overwrite or append
+
     for entry in config:
-        path = entry["path"]
+        path = entry.get("path")
+        if not path:
+            print("Error: Each configuration entry must include a 'path'.")
+            continue
+
         if os.path.isfile(path):
             print(f"Processing file: {path}")
-            process_file(path, [entry], args.output, args.format)
+            results = process_file(path, [entry], collect_results=True)
         elif os.path.isdir(path):
             print(f"Processing folder: {path}")
-            process_folder(path, [entry], args.output, args.format)
+            results = process_folder(path, [entry], collect_results=True)
         else:
-            print(f"Error: Path '{path}' is neither a valid file nor a folder.")
+            print(f"Error: Path '{path}' is not valid.")
+            continue
+
+        # Save results to output file
+        from results_writer import save_results
+        save_results(results, output_file, output_format, first_write)
+
+        # Set flag to append for subsequent writes
+        first_write = False
+
 
 if __name__ == "__main__":
     main()

@@ -1,55 +1,89 @@
 import json
 import csv
 
-def save_results(results, output_file, output_format):
-    """Save results to the specified output file and display them in the terminal."""
-    
+
+def save_results(results, output_file, output_format, first_write):
+    """
+    Save results to the specified output file and display them in the terminal.
+
+    Args:
+        results: List of results to save.
+        output_file: Path to the output file.
+        output_format: Format of the output file ('txt', 'csv', 'json').
+        first_write: Whether to overwrite the file (True) or append (False).
+    """
+    write_mode = 'w' if first_write else 'a'  # Overwrite or append
+
     # Display results in the terminal
     print("\n--- Results ---\n")
     for result in results:
-        print(f"File: {result['file']}")
-        if "line_number" in result:  # For plain text replacements
+        if "line_number" in result:  # Text replacement results
+            print(f"File: {result['file']}")
             print(f"  Line Number: {result['line_number']}")
             print(f"  Old Line: {result['old_line']}")
             print(f"  New Line: {result['new_line']}")
-        elif "json_path" in result:  # For JSONPath-based replacements
+            print(f"  Search Text: {result['search_text']}")
+            print(f"  Replace Text: {result['replace_text']}")
+            print(f"  Occurrences: {result['occurrences']}\n")
+        elif "json_path" in result:  # JSONPath replacement results
+            print(f"File: {result['file']}")
             print(f"  JSON Path: {result['json_path']}")
             print(f"  Old Value: {result['old_value']}")
-            print(f"  New Value: {result['new_value']}")
-        print()
+            print(f"  New Value: {result['new_value']}\n")
 
     # Save results to the specified output file
     if output_format == "txt":
-        with open(output_file, 'w') as file:
+        with open(output_file, write_mode) as file:
             for result in results:
                 file.write(f"File: {result['file']}\n")
                 if "line_number" in result:
                     file.write(f"  Line Number: {result['line_number']}\n")
                     file.write(f"  Old Line: {result['old_line']}\n")
                     file.write(f"  New Line: {result['new_line']}\n")
+                    file.write(f"  Search Text: {result['search_text']}\n")
+                    file.write(f"  Replace Text: {result['replace_text']}\n")
+                    file.write(f"  Occurrences: {result['occurrences']}\n\n")
                 elif "json_path" in result:
                     file.write(f"  JSON Path: {result['json_path']}\n")
                     file.write(f"  Old Value: {result['old_value']}\n")
-                    file.write(f"  New Value: {result['new_value']}\n")
-                file.write("\n")
+                    file.write(f"  New Value: {result['new_value']}\n\n")
 
     elif output_format == "csv":
-        with open(output_file, 'w', newline='') as file:
-            if "line_number" in results[0]:
-                writer = csv.DictWriter(
-                    file,
-                    fieldnames=["file", "line_number", "old_line", "new_line", "search_text", "replace_text", "occurrences"]
-                )
+        with open(output_file, write_mode, newline='') as file:
+            if first_write:
+                if "line_number" in results[0]:
+                    writer = csv.DictWriter(
+                        file,
+                        fieldnames=["file", "line_number", "old_line", "new_line", "search_text", "replace_text", "occurrences"],
+                    )
+                else:
+                    writer = csv.DictWriter(
+                        file,
+                        fieldnames=["file", "json_path", "old_value", "new_value"],
+                    )
+                writer.writeheader()
             else:
-                writer = csv.DictWriter(
-                    file,
-                    fieldnames=["file", "json_path", "old_value", "new_value"]
-                )
-            writer.writeheader()
+                if "line_number" in results[0]:
+                    writer = csv.DictWriter(
+                        file,
+                        fieldnames=["file", "line_number", "old_line", "new_line", "search_text", "replace_text", "occurrences"],
+                    )
+                else:
+                    writer = csv.DictWriter(
+                        file,
+                        fieldnames=["file", "json_path", "old_value", "new_value"],
+                    )
             writer.writerows(results)
 
     elif output_format == "json":
-        with open(output_file, 'w') as file:
-            json.dump(results, file, indent=4)
+        if first_write:
+            with open(output_file, write_mode) as file:
+                json.dump(results, file, indent=4)
+        else:
+            with open(output_file, "r") as file:
+                existing_data = json.load(file)
+            existing_data.extend(results)
+            with open(output_file, "w") as file:
+                json.dump(existing_data, file, indent=4)
 
-    print(f"\nResults saved to {output_file} in {output_format.upper()} format.")
+    print(f"Results saved to {output_file} in {output_format.upper()} format.")
