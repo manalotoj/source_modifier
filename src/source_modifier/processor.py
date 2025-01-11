@@ -3,6 +3,51 @@ from jsonpath_ng.ext import parse
 from file_utils import load_file, save_file
 from results_writer import save_results
 
+
+def resolve_jsonpath_placeholders(transform_format, content, original_value):
+    """
+    Resolves placeholders in the transform_format using JSONPath expressions
+    and the original value of the attribute.
+
+    Args:
+        transform_format: The format string with placeholders like `{jsonpath:<expression>}` or `{original}`.
+        content: The full JSON content being processed.
+        original_value: The original value of the attribute being modified.
+
+    Returns:
+        A string with all placeholders resolved and Python string operations applied.
+    """
+    import re
+
+    # Regex to extract JSONPath placeholders
+    placeholder_pattern = r"\{jsonpath:([^}]+)\}"
+
+    # Context for string operations
+    context = {"original": original_value}
+
+    # Resolve JSONPath placeholders and add to the context
+    def jsonpath_resolver(match):
+        jsonpath_expr = match.group(1)
+        jsonpath_compiled = parse(jsonpath_expr)
+        results = [result.value for result in jsonpath_compiled.find(content)]
+        resolved_value = results[0] if results else ""  # Use the first match or empty string
+        placeholder = match.group(0)
+        context[placeholder] = resolved_value  # Add resolved value to the context
+        return placeholder  # Keep placeholder unchanged for later evaluation
+
+    # Replace JSONPath placeholders with temporary placeholders in the string
+    resolved_format = re.sub(placeholder_pattern, jsonpath_resolver, transform_format)
+
+    # Evaluate the string with Python string operations
+    try:
+        # Use eval to apply string operations in a controlled environment
+        resolved_format = eval(f'f"""{resolved_format}"""', {"__builtins__": None}, context)
+    except Exception as e:
+        raise ValueError(f"Error evaluating transform_format: {transform_format}. Error: {e}")
+
+    return resolved_format
+
+
 def jsonpath_replace(content, rules):
     """
     Perform JSONPath-based replacement in JSON content.
@@ -18,16 +63,24 @@ def jsonpath_replace(content, rules):
     results = []
 
     for rule in rules:
-        if "jsonpath" not in rule or "replacement" not in rule:
-            raise ValueError(f"Invalid rule format: {rule}. Each rule must contain 'jsonpath' and 'replacement' keys.")
+        if "jsonpath" not in rule:
+            raise ValueError(f"Invalid rule format: {rule}. Each rule must contain 'jsonpath'.")
 
         jsonpath_expr = parse(rule["jsonpath"])
-        replacement = rule["replacement"]
+        replacement = rule.get("replacement")
+        transform_format = rule.get("transform_format")
 
         for match in jsonpath_expr.find(content):
             parent = match.context.value
             old_value = match.value
-            new_value = replacement
+
+            # Determine new value
+            if transform_format:
+                new_value = resolve_jsonpath_placeholders(transform_format, content, old_value)
+            elif replacement is not None:
+                new_value = replacement
+            else:
+                raise ValueError(f"Rule {rule} must specify either 'replacement' or 'transform_format'.")
 
             # Perform the replacement
             if isinstance(parent, dict):

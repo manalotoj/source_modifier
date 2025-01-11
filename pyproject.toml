@@ -23,4 +23,4 @@ homepage = "https://github.com/manalotoj/source_modifier"
 repository = "https://github.com/manalotoj/source_modifier"
 
 [project.scripts]
-source_modifier = "src.main:main"
+source_modifier = "source_modifier.main:main"
