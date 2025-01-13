@@ -30,6 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description="Perform search and replace on JSON or text files.")
     parser.add_argument("config", help="Path to the configuration file.")
     parser.add_argument("-o", "--output", help="Path to the output results file.", required=True)
+    parser.add_argument("-p", "--plan", action="store_true", help="Run in plan mode without modifying files.")
     args = parser.parse_args()
 
     config = load_file(args.config)
@@ -48,10 +49,10 @@ def main():
 
         if os.path.isfile(path):
             print(f"Processing file: {path}")
-            results = process_file(path, [entry], collect_results=True)
+            results = process_file(path, [entry], collect_results=True, plan=args.plan)
         elif os.path.isdir(path):
             print(f"Processing folder: {path}")
-            results = process_folder(path, [entry], collect_results=True)
+            results = process_folder(path, [entry], collect_results=True, plan=args.plan)
         else:
             print(f"Error: Path '{path}' is not valid.")
             continue

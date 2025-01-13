@@ -6,26 +6,11 @@ from results_writer import save_results
 
 
 def resolve_jsonpath_placeholders(transform, content, original_value):
-    """
-    Resolve placeholders in a transform string using JSONPath queries and original value.
-
-    Args:
-        transform: The transform string with placeholders.
-        content: The JSON content to evaluate JSONPath expressions against.
-        original_value: The original value of the matched JSONPath.
-
-    Returns:
-        The resolved string after applying JSONPath queries and substitutions.
-    """
     import re
 
-    # Regex to extract JSONPath placeholders
     placeholder_pattern = r"\{jsonpath:([^}]+)\}"
-
-    # Context for string operations
     context = {"original": original_value}
 
-    # Resolve JSONPath placeholders and add to the context
     def jsonpath_resolver(match):
         jsonpath_expr = match.group(1)
         jsonpath_compiled = parse(jsonpath_expr)
@@ -35,7 +20,6 @@ def resolve_jsonpath_placeholders(transform, content, original_value):
 
     resolved_transform = re.sub(placeholder_pattern, jsonpath_resolver, transform)
 
-    # Evaluate the string with Python string operations
     try:
         resolved_transform = eval(f'f"""{resolved_transform}"""', {"__builtins__": None}, context)
     except Exception as e:
@@ -45,16 +29,6 @@ def resolve_jsonpath_placeholders(transform, content, original_value):
 
 
 def jsonpath_replace(content, rules):
-    """
-    Perform replacements in JSON content based on JSONPath rules.
-
-    Args:
-        content: The JSON object to modify.
-        rules: The list of rules with JSONPath expressions and replacements or transforms.
-
-    Returns:
-        Modified JSON content and the list of changes made.
-    """
     results = []
 
     for rule in rules:
@@ -76,11 +50,6 @@ def jsonpath_replace(content, rules):
             else:
                 raise ValueError(f"Rule {rule} must specify either 'replacement' or 'transform'.")
 
-            if isinstance(parent, dict):
-                parent[match.path.fields[0]] = new_value
-            elif isinstance(parent, list):
-                parent[match.path.index] = new_value
-
             results.append({
                 "json_path": str(match.full_path),
                 "old_value": old_value,
@@ -91,16 +60,6 @@ def jsonpath_replace(content, rules):
 
 
 def text_replace(content, rules):
-    """
-    Perform text replacements in plain text content.
-
-    Args:
-        content: The plain text content as a string.
-        rules: A list of rules with 'search' and 'replace' keys.
-
-    Returns:
-        Updated text content and the list of changes made.
-    """
     lines = content.splitlines()
     results = []
 
@@ -131,20 +90,7 @@ def text_replace(content, rules):
     return updated_content, results
 
 
-def process_file(file_path, config, output_file=None, collect_results=False):
-    """
-    Process a single file as JSON or plain text based on its structure.
-
-    Args:
-        file_path: Path to the file to process.
-        config: Parsed configuration containing the rules for processing.
-        output_file: File to save the results (optional if collect_results is True).
-        collect_results: If True, return the results instead of saving to a file.
-
-    Returns:
-        If collect_results is True, returns the results as a list of dictionaries.
-        Otherwise, saves the results to the specified output file.
-    """
+def process_file(file_path, config, collect_results=False, plan=False):
     all_results = []
     content = load_file(file_path)
 
@@ -177,39 +123,21 @@ def process_file(file_path, config, output_file=None, collect_results=False):
 
         all_results.extend(results)
 
-    # Save the modified content back to the file
-    save_file(file_path, updated_content)
+    # Only save the modified content if not in plan mode
+    if not plan:
+        save_file(file_path, updated_content)
 
-    # Save results or return them based on the collect_results flag
-    if collect_results:
-        return all_results
-    else:
-        save_results(all_results, output_file, "txt")
+    # Return the results
+    return all_results
 
 
-def process_folder(folder, config, output_file=None, collect_results=False):
-    """
-    Process all files in a folder.
-
-    Args:
-        folder: Path to the folder to process.
-        config: Parsed configuration containing the rules for processing.
-        output_file: File to save the results (optional if collect_results is True).
-        collect_results: If True, return the results instead of saving to a file.
-
-    Returns:
-        If collect_results is True, returns the results as a list of dictionaries.
-        Otherwise, saves the results to the specified output file.
-    """
+def process_folder(folder, config, collect_results=False, plan=False):
     all_results = []
 
     for root, _, files in os.walk(folder):
         for file in files:
             file_path = os.path.join(root, file)
-            file_results = process_file(file_path, config, collect_results=True)
+            file_results = process_file(file_path, config, collect_results=True, plan=plan)
             all_results.extend(file_results)
 
-    if collect_results:
-        return all_results
-    else:
-        save_results(all_results, output_file, "txt")
+    return all_results

@@ -6,7 +6,7 @@
         "policyType": "Custom",
         "mode": "All",
         "displayName": "Deploy VM Data Disk Space Alert",
-        "description": "Policy to audit/deploy VM data Disk Space Alert",
+        "description": "Policy to audit/deploy VM data Disk Space Alert ---AND--- Policy to audit/deploy VM data Disk Space Alert ---AND--- Policy to audit/deploy VM data Disk Space Alert ---AND--- Policy to audit/deploy VM data Disk Space Alert",
         "metadata": {
             "version": "1.5.0",
             "category": "Compute",
@@ -21,7 +21,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Resource Group Name",
-                    "description": "Resource group the alert is placed in"
+                    "description": "Resource group the alert is placed in ---AND--- Resource group the alert is placed in ---AND--- Resource group the alert is placed in ---AND--- Resource group the alert is placed in"
                 },
                 "defaultValue": "rg-amba-monitoring-001"
             },
@@ -29,7 +29,7 @@
                 "type": "Object",
                 "metadata": {
                     "displayName": "Resource Group Tags",
-                    "description": "Tags on the Resource group the alert is placed in"
+                    "description": "Tags on the Resource group the alert is placed in ---AND--- Tags on the Resource group the alert is placed in ---AND--- Tags on the Resource group the alert is placed in ---AND--- Tags on the Resource group the alert is placed in"
                 },
                 "defaultValue": {
                     "Project": "amba-monitoring"
@@ -39,7 +39,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Resource Group Location",
-                    "description": "Location of the Resource group the alert is placed in"
+                    "description": "Location of the Resource group the alert is placed in ---AND--- Location of the Resource group the alert is placed in ---AND--- Location of the Resource group the alert is placed in ---AND--- Location of the Resource group the alert is placed in"
                 },
                 "defaultValue": "centralus"
             },
@@ -47,7 +47,7 @@
                 "type": "string",
                 "defaultValue": "",
                 "metadata": {
-                    "description": "The resource Id of the user assigned managed identity.",
+                    "description": "The resource Id of the user assigned managed identity. ---AND--- The resource Id of the user assigned managed identity. ---AND--- The resource Id of the user assigned managed identity. ---AND--- The resource Id of the user assigned managed identity.",
                     "displayName": "User Assigned managed Identity resource Id."
                 }
             },
@@ -55,7 +55,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Severity",
-                    "description": "Severity of the Alert"
+                    "description": "Severity of the Alert ---AND--- Severity of the Alert ---AND--- Severity of the Alert ---AND--- Severity of the Alert"
                 },
                 "allowedValues": [
                     "0",
@@ -90,7 +90,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Window Size",
-                    "description": "Window size for the alert"
+                    "description": "Window size for the alert ---AND--- Window size for the alert ---AND--- Window size for the alert ---AND--- Window size for the alert"
                 },
                 "allowedValues": [
                     "PT5M",
@@ -107,7 +107,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Evaluation Frequency",
-                    "description": "Evaluation frequency for the alert"
+                    "description": "Evaluation frequency for the alert ---AND--- Evaluation frequency for the alert ---AND--- Evaluation frequency for the alert ---AND--- Evaluation frequency for the alert"
                 },
                 "allowedValues": [
                     "PT5M",
@@ -121,7 +121,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Auto Mitigate",
-                    "description": "Auto Mitigate for the alert"
+                    "description": "Auto Mitigate for the alert ---AND--- Auto Mitigate for the alert ---AND--- Auto Mitigate for the alert ---AND--- Auto Mitigate for the alert"
                 },
                 "allowedValues": [
                     "true",
@@ -133,7 +133,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Auto Resolve",
-                    "description": "Auto Resolve for the alert"
+                    "description": "Auto Resolve for the alert ---AND--- Auto Resolve for the alert ---AND--- Auto Resolve for the alert ---AND--- Auto Resolve for the alert"
                 },
                 "allowedValues": [
                     "true",
@@ -145,7 +145,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Auto Resolve",
-                    "description": "Auto Resolve time for the alert in ISO 8601 format"
+                    "description": "Auto Resolve time for the alert in ISO 8601 format ---AND--- Auto Resolve time for the alert in ISO 8601 format ---AND--- Auto Resolve time for the alert in ISO 8601 format ---AND--- Auto Resolve time for the alert in ISO 8601 format"
                 },
                 "defaultValue": "true"
             },
@@ -153,7 +153,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Alert State",
-                    "description": "Alert state for the alert"
+                    "description": "Alert state for the alert ---AND--- Alert state for the alert ---AND--- Alert state for the alert ---AND--- Alert state for the alert"
                 },
                 "allowedValues": [
                     "true",
@@ -165,7 +165,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Threshold",
-                    "description": "Threshold for the alert"
+                    "description": "Threshold for the alert ---AND--- Threshold for the alert ---AND--- Threshold for the alert ---AND--- Threshold for the alert"
                 },
                 "defaultValue": "10"
             },
@@ -173,7 +173,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Failing Periods",
-                    "description": "Number of failing periods before alert is fired"
+                    "description": "Number of failing periods before alert is fired ---AND--- Number of failing periods before alert is fired ---AND--- Number of failing periods before alert is fired ---AND--- Number of failing periods before alert is fired"
                 },
                 "defaultValue": "1"
             },
@@ -181,7 +181,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Evaluation Periods",
-                    "description": "The number of aggregated lookback points."
+                    "description": "The number of aggregated lookback points. ---AND--- The number of aggregated lookback points. ---AND--- The number of aggregated lookback points. ---AND--- The number of aggregated lookback points."
                 },
                 "defaultValue": "1"
             },
@@ -189,7 +189,7 @@
                 "type": "array",
                 "metadata": {
                     "displayName": "Computers to be included to be monitored",
-                    "description": "Array of Computer to be monitored"
+                    "description": "Array of Computer to be monitored ---AND--- Array of Computer to be monitored ---AND--- Array of Computer to be monitored ---AND--- Array of Computer to be monitored"
                 },
                 "defaultValue": [
                     "*"
@@ -199,7 +199,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "Effect",
-                    "description": "Effect of the policy"
+                    "description": "Effect of the policy ---AND--- Effect of the policy ---AND--- Effect of the policy ---AND--- Effect of the policy"
                 },
                 "allowedValues": [
                     "deployIfNotExists",
@@ -211,7 +211,7 @@
                 "type": "String",
                 "metadata": {
                     "displayName": "ALZ Monitoring disabled tag name",
-                    "description": "Tag name to disable monitoring. Set to true if monitoring should be disabled"
+                    "description": "Tag name to disable monitoring. Set to true if monitoring should be disabled ---AND--- Tag name to disable monitoring. Set to true if monitoring should be disabled ---AND--- Tag name to disable monitoring. Set to true if monitoring should be disabled ---AND--- Tag name to disable monitoring. Set to true if monitoring should be disabled"
                 },
                 "defaultValue": "MonitorDisable"
             },
@@ -219,7 +219,7 @@
                 "type": "Array",
                 "metadata": {
                     "displayName": "ALZ Monitoring disabled tag values(s)",
-                    "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled."
+                    "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled. ---AND--- Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled. ---AND--- Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled. ---AND--- Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled."
                 },
                 "defaultValue": [
                     "true",
@@ -428,7 +428,7 @@
                                                         },
                                                         "properties": {
                                                             "displayName": "[[concat(subscription().displayName, '-VMLowDataDiskSpaceAlert')]",
-                                                            "description": "Log Alert for Virtual Machine dataDiskSpace",
+                                                            "description": "Log Alert for Virtual Machine dataDiskSpace ---AND--- Log Alert for Virtual Machine dataDiskSpace ---AND--- Log Alert for Virtual Machine dataDiskSpace ---AND--- Log Alert for Virtual Machine dataDiskSpace",
                                                             "severity": "[[parameters('severity')]",
                                                             "enabled": "[[parameters('enabled')]",
                                                             "scopes": [
