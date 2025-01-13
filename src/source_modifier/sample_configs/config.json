@@ -6,7 +6,7 @@
     },
     {
         "path": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json",
-        "jsonpath": "$..description",
+        "jsonpath": "$..deployment..properties.description",
         "transform": "{original} ---AND--- {original}"
     },
     { 

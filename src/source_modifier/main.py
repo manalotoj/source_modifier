@@ -30,8 +30,15 @@ def main():
     parser = argparse.ArgumentParser(description="Perform search and replace on JSON or text files.")
     parser.add_argument("config", help="Path to the configuration file.")
     parser.add_argument("-o", "--output", help="Path to the output results file.", required=True)
-    parser.add_argument("-p", "--plan", action="store_true", help="Run in plan mode without modifying files.")
+    parser.add_argument("-p", "--plan", action="store_true", help="Plan the changes without applying them.")
+    parser.add_argument("-a", "--apply", action="store_true", help="Apply the changes to the target files.")
     args = parser.parse_args()
+
+    if args.plan and args.apply:
+        raise ValueError("Both --plan and --apply cannot be specified together. Choose one.")
+
+    if not args.plan and not args.apply:
+        args.plan = True  # Default behavior is plan mode
 
     config = load_file(args.config)
     if not isinstance(config, list):

@@ -2,7 +2,6 @@ import os
 import json
 from jsonpath_ng.ext import parse
 from file_utils import load_file, save_file
-from results_writer import save_results
 
 
 def resolve_jsonpath_placeholders(transform, content, original_value):
@@ -15,8 +14,7 @@ def resolve_jsonpath_placeholders(transform, content, original_value):
         jsonpath_expr = match.group(1)
         jsonpath_compiled = parse(jsonpath_expr)
         results = [result.value for result in jsonpath_compiled.find(content)]
-        resolved_value = results[0] if results else ""
-        return resolved_value
+        return results[0] if results else ""
 
     resolved_transform = re.sub(placeholder_pattern, jsonpath_resolver, transform)
 
@@ -50,11 +48,17 @@ def jsonpath_replace(content, rules):
             else:
                 raise ValueError(f"Rule {rule} must specify either 'replacement' or 'transform'.")
 
-            results.append({
-                "json_path": str(match.full_path),
-                "old_value": old_value,
-                "new_value": new_value,
-            })
+            if old_value != new_value:  # Only update if there's a change
+                if isinstance(parent, dict):
+                    parent[match.path.fields[0]] = new_value
+                elif isinstance(parent, list):
+                    parent[match.path.index] = new_value
+
+                results.append({
+                    "json_path": str(match.full_path),
+                    "old_value": old_value,
+                    "new_value": new_value,
+                })
 
     return content, results
 
@@ -74,23 +78,22 @@ def text_replace(content, rules):
 
             if search_text in line:
                 occurrences = line.count(search_text)
-                line = line.replace(search_text, replace_text)
+                updated_line = line.replace(search_text, replace_text)
+                lines[i] = updated_line  # Update the modified line
                 results.append({
                     "line_number": i + 1,
                     "old_line": original_line,
-                    "new_line": line,
+                    "new_line": updated_line,
                     "search_text": search_text,
                     "replace_text": replace_text,
                     "occurrences": occurrences,
                 })
 
-        lines[i] = line
-
     updated_content = "\n".join(lines)
     return updated_content, results
 
 
-def process_file(file_path, config, collect_results=False, plan=False):
+def process_file(file_path, config, collect_results=False, plan=True):
     all_results = []
     content = load_file(file_path)
 
@@ -110,12 +113,11 @@ def process_file(file_path, config, collect_results=False, plan=False):
             results.extend(json_results)
 
         # Apply text replacement if the rule specifies search/replace
-        if "search" in rule and "replace" in rule:
+        elif "search" in rule and "replace" in rule:
             string_content = json.dumps(updated_content, indent=4) if is_json else updated_content
             string_content, text_results = text_replace(string_content, [rule])
             results.extend(text_results)
 
-            # Update content back to JSON if originally JSON
             updated_content = json.loads(string_content) if is_json else string_content
 
         for result in results:
@@ -123,15 +125,14 @@ def process_file(file_path, config, collect_results=False, plan=False):
 
         all_results.extend(results)
 
-    # Only save the modified content if not in plan mode
+    # Save the modified content to the file only if not in plan mode
     if not plan:
         save_file(file_path, updated_content)
 
-    # Return the results
     return all_results
 
 
-def process_folder(folder, config, collect_results=False, plan=False):
+def process_folder(folder, config, collect_results=False, plan=True):
     all_results = []
 
     for root, _, files in os.walk(folder):
