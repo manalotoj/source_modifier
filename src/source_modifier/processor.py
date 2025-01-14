@@ -1,7 +1,7 @@
 import os
 import json
 from jsonpath_ng.ext import parse
-from file_utils import load_file, save_file
+from source_modifier.file_utils import load_file, save_file
 
 
 def resolve_jsonpath_placeholders(transform, content, original_value):

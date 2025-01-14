@@ -1,8 +1,8 @@
 import argparse
 import os
-from processor import process_file, process_folder
-from file_utils import load_file
-from results_writer import save_results
+from source_modifier.processor import process_file, process_folder
+from source_modifier.file_utils import load_file
+from source_modifier.results_writer import save_results
 
 
 def infer_output_format(output_file):
@@ -15,6 +15,7 @@ def infer_output_format(output_file):
     Returns:
         The inferred output format ('txt', 'csv', or 'json').
     """
+    print("output_file:", output_file)
     ext = os.path.splitext(output_file)[1].lower()
     if ext == ".txt":
         return "txt"
