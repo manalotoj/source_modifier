@@ -14,22 +14,12 @@ A Python-based tool for modifying source code with advanced search-and-replace f
 
 ## **Installation**
 
-### **From PyPI (Coming Soon)**
-```bash
-pip install source-modifier
-```
+### **From GitHub Releases**
+1. Download the latest release from the [GitHub Releases page](https://github.com/manalotoj/source_modifier/releases).
 
-### **From Source**
-1. Clone the repository:
+2. Install the downloaded wheel file:
    ```bash
-   git clone https://github.com/manalotoj/source_modifier.git
-   cd source_modifier
-   ```
-
-2. Build and install:
-   ```bash
-   python -m build
-   pip install dist/source_modifier-0.1.0-py3-none-any.whl
+   pip install source_modifier-<version>-py3-none-any.whl
    ```
 
 ---
@@ -39,91 +29,64 @@ pip install source-modifier
 ### **Command-Line Interface**
 Run the tool from the command line:
 ```bash
-source_modifier --config <config.json> --output <output.txt> [--plan | --apply]
+source_modifier <config_file> -o <output_file> [-p | -a]
 ```
 
 #### **Options**
-- `--config`: Path to the configuration file defining search-and-replace rules.
-- `--output`: Path to save the results.
-- `--plan`: Preview changes without applying them.
-- `--apply`: Apply changes directly to the files.
+- `<config_file>`: Path to the configuration file defining search-and-replace rules.
+- `-o/--output`: Path to save the results.
+- `-p/--plan`: Preview changes without applying them.
+- `-a/--apply`: Apply changes directly to the files.
 
 #### **Example**
 ```bash
-source_modifier --config config.json --output results.json --plan
-```
-
-### **As a Python Library**
-Import the package in your Python scripts:
-```python
-from source_modifier.main import main
-
-main()
+source_modifier config.json -o results.json -p
 ```
 
 ---
 
 ## **Configuration File**
 The configuration file is a JSON file containing a list of rules. Each rule defines:
-- `path`: File or directory to process.
-- `search`: Text to search for (text files).
-- `replace`: Replacement text (text files).
-- `jsonpath`: JSONPath query for locating elements (JSON files).
-- `replacement`: Value to replace the matched JSONPath.
+- **Plain Text Search and Replace**: Use `search`, `replace`, and `path` properties.
+- **JSON Modification**: Use `path`, `jsonpath`, and either `replacement` or `transform` properties. If both `replacement` and `transform` are provided, `transform` takes precedence.
 
 ### **Example Configuration**
 ```json
 [
     {
-        "path": "data/input.json",
-        "jsonpath": "$.items[*].name",
-        "replacement": "Updated Name"
+        "path": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json",
+        "jsonpath": "$..query",
+        "replacement": "[format('let policyThresholdString = \"{0}\"; InsightsMetrics | where _ResourceId has \"Microsoft.Compute/virtualMachines\" | where Origin == \"vm.azm.ms\" | where Namespace == \"LogicalDisk\" and Name == \"FreeSpacePercentage\" | extend Disk=tostring(todynamic(Tags)[\"vm.azm.ms/mountId\"]) | where Disk !in (\"C:\\\",\"/\") | summarize AggregatedValue = avg(Val) by bin(TimeGenerated, 15m), Computer, _ResourceId, Disk | extend appliedThresholdString = policyThresholdString | extend appliedThreshold = toint(appliedThresholdString) | where AggregatedValue < appliedThreshold | project TimeGenerated, Computer, _ResourceId, Disk, AggregatedValue', parameters('threshold'))]"
     },
     {
-        "path": "data/example.txt",
-        "search": "foo",
-        "replace": "bar"
+        "path": "./sample_target/Deploy-VM-DataDiskSpace-Alert.json",
+        "jsonpath": "$..deployment..properties.description",
+        "transform": "{original} ---AND--- {original}"
+    },
+    { 
+        "search": "northeurope", 
+        "replace": "usgovarizona", 
+        "path": "./sample_target" 
     }
 ]
 ```
 
----
+#### **Explanation of the Configuration**
 
-## **Development**
+1. **First Entry:**
+   - This rule replaces the entire value of a JSON property located using the JSONPath expression `$..query`.
+   - The `replacement` field specifies the new value to be assigned, which includes a complex query string.
+   - **JSONPath Usage:** JSONPath allows precise targeting of the `query` property across the JSON file.
 
-### **Requirements**
-Install dependencies for development:
-```bash
-pip install -r requirements-dev.txt
-```
+2. **Second Entry:**
+   - This rule uses the `transform` field to modify the `description` attribute found via the JSONPath expression `$..deployment..properties.description`.
+   - The `transform` field supports Python string interpolation and operations. Here, `{original}` is used to reference the current value of the JSON property, enabling dynamic modifications like appending or altering content.
+   - **Dynamic Transformation:**
+     - The `transform` field allows referencing other JSON attributes or values dynamically within the same JSON file.
+     - Python expressions can be used to construct or modify the new value based on the current context of the JSON attribute.
 
-### **Testing**
-Run tests using `pytest`:
-```bash
-pytest tests/
-```
-
-### **Build the Project**
-```bash
-python -m build
-```
-
----
-
-## **License**
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
-
----
-
-## **Contributing**
-Contributions are welcome! To contribute:
-1. Fork the repository.
-2. Create a feature branch.
-3. Submit a pull request.
-
----
-
-## **Links**
-- **Homepage**: [GitHub Repository](https://github.com/manalotoj/source_modifier)
-- **Issues**: [Report a Bug](https://github.com/manalotoj/source_modifier/issues)
+3. **Third Entry:**
+   - This is a straightforward text search-and-replace rule.
+   - It searches for the string `northeurope` within text files or directories under `./sample_target` and replaces it with `usgovarizona`.
+   - **Plain Text Replacement:** No JSON-specific logic is applied here, making it suitable for modifying plain text files.
 
