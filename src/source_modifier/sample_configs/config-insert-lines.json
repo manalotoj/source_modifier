@@ -1,0 +1,14 @@
+[
+  {
+    "path": "/Users/johnmanaloto/source/github/amba/amba-source/patterns/alz/templates/policySets.bicep",
+    "operation": "insert",
+    "line_number": 169,         
+    "insert_position": "after",
+    "lines": [
+        "",
+        "Inserted Line 1",
+        "Inserted Line 2",
+        ""
+    ]
+  }
+]

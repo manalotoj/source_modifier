@@ -3,6 +3,55 @@ import json
 from jsonpath_ng.ext import parse
 from source_modifier.file_utils import load_file, save_file
 
+def insert_lines_by_line_number(content, rules):
+    """
+    Insert lines into the content based on line numbers.
+
+    Parameters:
+        content (str): The file content as a string.
+        rules (list of dict): List of insertion rules. Each rule must contain:
+            - 'line_number': The line number for insertion (1-based indexing).
+            - 'insert_position': Either 'before' or 'after'.
+            - 'lines': List of lines to insert.
+
+    Returns:
+        str: The updated content.
+        list: The results of the operation.
+    """
+    lines = content.splitlines()
+    results = []
+
+    for rule in rules:
+        operation = rule.get("operation")
+        line_number = rule.get("line_number")
+        insert_position = rule.get("insert_position", "after")
+        new_lines = rule.get("lines", [])
+
+        if operation != "insert":
+            raise ValueError(f"Unsupported operation: {operation}.")
+        if not isinstance(line_number, int) or line_number < 1 or line_number > len(lines) + 1:
+            raise ValueError(f"Invalid line number: {line_number}.")
+        if insert_position not in ["before", "after"]:
+            raise ValueError(f"Invalid insert_position: {insert_position}. Must be 'before' or 'after'.")
+
+        # Adjust for 0-based indexing
+        line_index = line_number - 1
+
+        # Determine where to insert
+        insert_index = line_index if insert_position == "before" else line_index + 1
+
+        # Insert new lines
+        for new_line in reversed(new_lines):  # Reverse to maintain order when inserting
+            lines.insert(insert_index, new_line)
+
+        results.append({
+            "operation": operation,
+            "line_number": line_number,
+            "insert_position": insert_position,
+            "lines_inserted": new_lines,
+        })
+
+    return "\n".join(lines), results
 
 def resolve_jsonpath_placeholders(transform, content, original_value):
     import re
@@ -106,6 +155,14 @@ def process_file(file_path, config, collect_results=False, plan=True):
 
     for rule in config:
         results = []
+
+        # Apply line modification based on line number
+        if "line_number" in rule:
+            string_content = json.dumps(updated_content, indent=4) if is_json else updated_content
+            string_content, modify_results = insert_lines_by_line_number(string_content, [rule])
+            results.extend(modify_results)
+
+            updated_content = json.loads(string_content) if is_json else string_content
 
         # Apply JSONPath replacement if the rule specifies jsonpath
         if "jsonpath" in rule and is_json:

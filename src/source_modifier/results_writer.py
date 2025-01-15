@@ -17,7 +17,7 @@ def save_results(results, output_file, output_format, first_write):
     # Display results in the terminal
     print("\n--- Results ---\n")
     for result in results:
-        if "line_number" in result:  # Text replacement results
+        if "search_text" in result:  # Text replacement results
             print(f"File: {result['file']}")
             print(f"  Line Number: {result['line_number']}")
             print(f"  Old Line: {result['old_line']}")
@@ -30,13 +30,16 @@ def save_results(results, output_file, output_format, first_write):
             print(f"  JSON Path: {result['json_path']}")
             print(f"  Old Value: {result['old_value']}")
             print(f"  New Value: {result['new_value']}\n")
+        elif "lines_inserted" in result: # Line insertion results
+            print(f"File: {result['file']}")
+            print(f"  {len(result['lines_inserted'])}) lines were {result['operation']} {result['insert_position']} at line number {result['line_number']}\n")
 
     # Save results to the specified output file
     if output_format == "txt":
         with open(output_file, write_mode, encoding="utf-8") as file:
             for result in results:
                 file.write(f"File: {result['file']}\n")
-                if "line_number" in result:
+                if "search_text" in result:
                     file.write(f"  Line Number: {result['line_number']}\n")
                     file.write(f"  Old Line: {result['old_line']}\n")
                     file.write(f"  New Line: {result['new_line']}\n")
@@ -47,11 +50,14 @@ def save_results(results, output_file, output_format, first_write):
                     file.write(f"  JSON Path: {result['json_path']}\n")
                     file.write(f"  Old Value: {result['old_value']}\n")
                     file.write(f"  New Value: {result['new_value']}\n\n")
+                elif "lines_inserted" in result:
+                    file.write(f"File: {result['file']}")
+                    file.write(f"  {len(result['lines_inserted'])}) lines were {result['operation']} {result['insert_position']} at line number {result['line_number']}\n")
 
     elif output_format == "csv":
         with open(output_file, write_mode, newline='', encoding="utf-8") as file:
             if first_write:
-                if "line_number" in results[0]:
+                if "search_text" in results[0]:
                     writer = csv.DictWriter(
                         file,
                         fieldnames=["file", "line_number", "old_line", "new_line", "search_text", "replace_text", "occurrences"],
@@ -63,15 +69,20 @@ def save_results(results, output_file, output_format, first_write):
                     )
                 writer.writeheader()
             else:
-                if "line_number" in results[0]:
+                if "search_text" in results[0]:
                     writer = csv.DictWriter(
                         file,
                         fieldnames=["file", "line_number", "old_line", "new_line", "search_text", "replace_text", "occurrences"],
                     )
-                else:
+                elif "json_path" in results[0]:
                     writer = csv.DictWriter(
                         file,
                         fieldnames=["file", "json_path", "old_value", "new_value"],
+                    )
+                elif "lines_inserted" in results[0]:
+                    writer = csv.DictWriter(
+                        file,
+                        fieldnames=["file", "lines_inserted", "operation", "insert_position", "line_number"],
                     )
             writer.writerows(results)
 
