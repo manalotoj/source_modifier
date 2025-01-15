@@ -1,0 +1,7 @@
+[
+    { 
+        "search": "northeurope", 
+        "replacement": "usgovarizona", 
+        "path": "/Users/johnmanaloto/source/github/amba/amba-source/services" 
+    }
+]

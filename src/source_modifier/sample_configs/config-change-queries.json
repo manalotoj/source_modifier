@@ -1,0 +1,12 @@
+[
+    {
+        "path": "/Users/johnmanaloto/source/github/amba/amba-source/services/compute/virtualMachines/Deploy-VM-DataDiskReadLatency-Alert.json",
+        "jsonpath": "$..allOf[?(@.field == \"Microsoft.Insights/scheduledQueryRules/criteria.allOf[*].query\")].equals",
+        "replacement": "allOf-equals-query"
+    },
+    {
+        "path": "/Users/johnmanaloto/source/github/amba/amba-source/services/compute/virtualMachines/Deploy-VM-DataDiskReadLatency-Alert.json",
+        "jsonpath": "$..query",
+        "replacement": "plain-query"
+    }
+]

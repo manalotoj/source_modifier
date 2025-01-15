@@ -70,11 +70,11 @@ def text_replace(content, rules):
     for i, line in enumerate(lines):
         original_line = line
         for rule in rules:
-            if "search" not in rule or "replace" not in rule:
+            if "search" not in rule or "replacement" not in rule:
                 raise ValueError(f"Invalid rule format: {rule}. Each rule must contain 'search' and 'replace' keys.")
 
             search_text = rule["search"]
-            replace_text = rule["replace"]
+            replace_text = rule["replacement"]
 
             if search_text in line:
                 occurrences = line.count(search_text)
@@ -113,7 +113,7 @@ def process_file(file_path, config, collect_results=False, plan=True):
             results.extend(json_results)
 
         # Apply text replacement if the rule specifies search/replace
-        elif "search" in rule and "replace" in rule:
+        elif "search" in rule and "replacement" in rule:
             string_content = json.dumps(updated_content, indent=4) if is_json else updated_content
             string_content, text_results = text_replace(string_content, [rule])
             results.extend(text_results)
