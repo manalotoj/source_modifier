@@ -13,7 +13,7 @@ except FileNotFoundError:
 
 setup(
     name="source_modifier",
-    version="0.1.0",
+    version="0.1.1",
     author="Manalotoj",
     author_email="mail@mail.com",
     description="A Python script to modify source code.",

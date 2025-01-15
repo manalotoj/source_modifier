@@ -6,6 +6,7 @@ A Python-based tool for modifying source code with advanced search-and-replace f
 
 ## **Features**
 - **Search and Replace**: Perform targeted modifications in JSON and text files.
+- **Insert Lines**: Insert lines of text before or after a designated line number in any file.
 - **JSONPath Support**: Use JSONPath for precise queries and transformations.
 - **Batch Processing**: Process individual files or entire directories.
 - **Plan or Apply**: Preview changes with "plan mode" before applying them.
@@ -67,6 +68,18 @@ The configuration file is a JSON file containing a list of rules. Each rule defi
         "search": "northeurope", 
         "replace": "usgovarizona", 
         "path": "./sample_target" 
+    },
+    {
+        "path": "/Users/johnmanaloto/source/github/amba/amba-source/patterns/alz/templates/policySets.bicep",
+        "operation": "insert",
+        "line_number": 169,         
+        "insert_position": "after",
+        "lines": [
+            "",
+            "Inserted Line 1",
+            "Inserted Line 2",
+            ""
+        ]
     }
 ]
 ```
