@@ -1,7 +1,7 @@
 [
     { 
-        "search": "northeurope", 
-        "replacement": "usgovarizona", 
-        "path": "/Users/johnmanaloto/source/github/amba/amba-source/services" 
+        "search": "version", 
+        "replacement": "~~newversion~~", 
+        "path": "/Users/johnmanaloto/source/github/amba/amba-source/patterns/alz/policySetDefinitions" 
     }
 ]
