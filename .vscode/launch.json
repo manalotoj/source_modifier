@@ -13,7 +13,7 @@
       "env": {
         "PYTHONPATH": "${workspaceFolder}/src"
       },
-      "args": ["/Users/johnmanaloto/source/github/source_modifier/src/source_modifier/sample_configs/config-insert-lines.json", "-o", "results.json", "-a"]
+      "args": ["/Users/johnmanaloto/source/github/source_modifier/src/source_modifier/sample_configs/config-rename-services-alert-rules.json", "-o", "results.json", "-p"]
     }
   ]
 }

@@ -1,0 +1,7 @@
+[
+    {
+        "path": "/Users/johnmanaloto/source/github/amba/amba-source/services/Resources/subscriptions",
+        "jsonpath": "$..deployment..template.resources..resources[1].properties.description",
+        "transform": "{original}~IBM"
+    }
+]

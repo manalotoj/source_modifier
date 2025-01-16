@@ -66,7 +66,7 @@ The configuration file is a JSON file containing a list of rules. Each rule defi
     },
     { 
         "search": "northeurope", 
-        "replace": "usgovarizona", 
+        "replacement": "usgovarizona", 
         "path": "./sample_target" 
     },
     {

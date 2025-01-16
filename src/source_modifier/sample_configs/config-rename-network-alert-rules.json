@@ -1,0 +1,7 @@
+[
+    {
+        "path": "/Users/johnmanaloto/source/github/amba/amba-source/services/Network",
+        "jsonpath": "$.properties.policyRule.then.details.deployment.properties.template.resources[0].properties.description",
+        "transform": "IBM~{original}"
+    }
+]
